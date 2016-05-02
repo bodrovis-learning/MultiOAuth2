@@ -1,0 +1,6 @@
+<nav>
+  <ul>
+    <li><%= current_user.name %></li>
+    <li><%= link_to 'Log Out', session_path, method: :delete %></li>
+  </ul>
+</nav>

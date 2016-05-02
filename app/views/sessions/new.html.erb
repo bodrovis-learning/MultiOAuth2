@@ -1,0 +1,7 @@
+<h1>Authenticate</h1>
+
+<%= form_tag session_path, method: :post do %>
+  <%= text_field_tag 'password' %>
+
+  <%= submit_tag 'Login' %>
+<% end %>
