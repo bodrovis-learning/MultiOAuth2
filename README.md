@@ -8,7 +8,9 @@ To boot this app:
 * Create *config/local_env.yml* file with the following contents:
 
 ```yaml
-TWITTER_KEY: ''
+TWITTER_KEY: 'key'
+TWITTER_SECRET: 'secret'
+# etc
 ```
 
 * `bundle install`
@@ -19,7 +21,8 @@ TWITTER_KEY: ''
 
 To add a new social provider:
 
-* Simply modify *config/initializers/omniauth.rb* file
+* Modify *config/initializers/omniauth.rb* file
+* Add a new value to the `AVAILABLE_PROVIDERS` constant inside *models/social_account.rb*
 * ...that's pretty much it
 
 (c) 2016 [Ilya Bodrov](http://radiant-wind.com)
