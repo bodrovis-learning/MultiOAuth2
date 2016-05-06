@@ -1,27 +1,30 @@
 class SocialAccount < ApplicationRecord
-  # Each strategy has a method `name`. The name looks like:
-  # "OmniAuth::Strategies::Facebook", so we take the last part of the name,
-  # then downcase it and convert to symbol. However, the list of strategies also
-  # includes "OmniAuth::Strategies::OAuth2" (the basic strategy, so we remove it).
-  # As a result we get something like AVAILABLE_PROVIDERS = [:twitter, :facebook]
-  AVAILABLE_PROVIDERS = OmniAuth.strategies.map do |s|
-      s.name.match(/::(\w+)\z/)[1].downcase.to_sym
-  end.delete_if {|p| p == :oauth2}
+  AVAILABLE_PROVIDERS = %w(twitter)
 
   belongs_to :user
-  validates :provider, presence: true# in?
-  validates :uid, uniqueness: true
+  validates :provider, presence: true, inclusion: { in: AVAILABLE_PROVIDERS }
+  validates :uid, uniqueness: { scope: :provider }
 
   class << self
     def from_omniauth(auth, user)
-      provider = auth['provider']
-      uid = auth['uid']
-      social_account = find_or_initialize_by(provider: provider, uid: uid)
-      if social_account && social_account.user != user
-        raise
-      else
-        social_account.name = auth['info']['name']
+      # We try to fetch social_account based on the passed provider and uid
+      # If such social account cannot be found, we define (initialize) a new one
+      # Please note that initialization means that we ONLY store it in memory - we do not save it to the
+      # database yet
+      social_account = find_or_initialize_by(provider: auth['provider'], uid: auth['uid'])
+      unless social_account.user
+        # if the social_account does not have any parent user
+        # we check if the user was passed
+        # if no user is set, we raise an error - it means that we simply don't have enough data about the user
+        # if the user IS set, we store its id
+        user.nil? ? raise(RecordNotFound) : social_account.user = user
       end
+      # now just save any other data
+      social_account.name = auth['info']['name']
+      # save the social_account into the database
+      social_account.save!
+      # and return it as a result
+      social_account
     end
   end
 end

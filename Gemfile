@@ -16,7 +16,9 @@ gem 'jquery-rails'
 # Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
 gem 'turbolinks', '~> 5.x'
 
+# Auth
 gem 'bcrypt'
+gem 'omniauth-twitter'
 
 group :development, :test do
   gem 'better_errors'

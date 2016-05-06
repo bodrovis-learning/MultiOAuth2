@@ -7,7 +7,13 @@ class ApplicationController < ActionController::Base
   private
 
   def authenticate_user!
-    redirect_to root_path unless user_signed_in?
+    # user has to be authenticated
+    redirect_to new_session_path unless user_signed_in?
+  end
+
+  def require_no_authentication
+    # user has to be NOT authenticated
+    redirect_to root_path if current_user
   end
 
   def sign_in(user)
@@ -16,17 +22,20 @@ class ApplicationController < ActionController::Base
   end
 
   def user_signed_in?
-    !@current_user.nil?
+    !current_user.nil?
   end
 
   def current_user
     # We either return a previously set @current_user variable or
-    # set it to a guest user
-    @current_user ||= GuestUser.new
+    # assign value now
+    session[:user_id] ? @current_user ||= User.find_by(id: session[:user_id]) : nil
   end
 
   def sign_out
     session.delete(:user_id)
     @current_user = nil
   end
+
+  # These methods should be available in the views as well
+  helper_method :current_user, :user_signed_in?
 end

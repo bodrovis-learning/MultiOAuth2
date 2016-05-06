@@ -1,5 +1,8 @@
 class User < ApplicationRecord
+  has_secure_password
+
   has_many :social_accounts, dependent: :destroy
+  validates :email, presence: true, uniqueness: true
 
   def has_provider?(provider)
     !with_provider(provider).nil?

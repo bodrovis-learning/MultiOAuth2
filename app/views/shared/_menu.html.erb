@@ -1,6 +1,10 @@
 <nav>
   <ul>
-    <li><%= current_user.name %></li>
-    <li><%= link_to 'Log Out', session_path, method: :delete %></li>
+    <% if user_signed_in? %>
+      <li><%= link_to current_user.email, edit_user_path(current_user) %></li>
+      <li><%= link_to 'Log Out', logout_path, method: :delete %></li>
+    <% else %>
+      <%= link_to 'Log In', new_session_path %>
+    <% end %>
   </ul>
 </nav>
